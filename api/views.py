@@ -19,10 +19,17 @@ def student_details(request, id):
 
 @csrf_exempt
 def create_student(request):
-    bytes_data = request.body
-    stream = io.BytesIO(bytes_data)
-    print(stream)
-    data = JSONParser().parse(stream)
-    # print(data)
-
-    return HttpResponse("Hello")
+    if request.method == "POST":
+        json_data = request.body
+        stream = io.BytesIO(json_data)
+        # print(stream.getvalue())
+        pythondata = JSONParser().parse(stream)
+        print(type(pythondata))
+        serializer = StudentSerializer(data=pythondata)
+        if serializer.is_valid():
+            print("helk")
+            serializer.save()
+            res = {"msg": "Data Created"}
+            return JsonResponse(res)
+        print("Hok")
+        return JsonResponse(serializer.errors)
